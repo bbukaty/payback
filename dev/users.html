@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="Office bet database">
+		<meta name="author" content="Buck Bukaty">
+		<link rel="icon" href="favicon.ico">
+
+		<title>Payback</title>
+
+		<!-- Bootstrap core CSS -->
+		<link href="../../bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="style.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts.js"></script>
+		
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				<a class="navbar-brand" href="#">Payback Board</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active" id="homeNavbar"><a href="index.html">Home</a></li>
+						<li><a href="history.html">History</a></li>
+						<li class="dropdown" id="usersNavbar">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
+							<ul class="dropdown-menu" id="usersDropdown"></ul>
+						</li>
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</nav>
+
+		<div class="container">
+			<div class="starter-template">
+				<h1>Payback Board</h1>
+				<p class="lead">Keep track of what co-workers owe you.</p>
+				
+				<p>
+					<button class="btn btn-primary btn-massive" type="button" data-toggle="collapse" data-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
+						Upload a Bet
+					</button>
+					<div class="collapse" id="collapseForm">
+						<div class="well">
+							<form id='betForm'>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-md-2">
+											<label for="winnerEntry">Winner</label>
+											<input type="text" class="form-control" name="winner" id="winnerEntry">
+										</div>
+										<div class="col-md-2">
+											<label for="loserEntry">Loser</label>
+											<input type="text" class="form-control" name="loser" id="loserEntry">
+										</div>
+										<div class="col-md-2">
+											<label for="itemEntry">Item Owed</label>
+											<input type="text" class="form-control" name="item" id="itemEntry">
+										</div>
+										<div class="col-md-1">
+											<label for="quantityEntry">Quantity</label>
+											<input type="text" class="form-control" name="quantity" id="quantityEntry">
+										</div>
+										<div class="col-md-5">
+											<label for="descriptionEntry">Description</label>
+											<input type="text" class="form-control" name="description" id="descriptionEntry">
+										</div>
+									</div>
+									<br><button type="submit" class="btn btn-primary" >Submit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</p>
+			</div>
+			
+			
+			<div class="mainBoard" id='boardDiv'>
+				
+				<div class="page-header">
+					<h2>User: Mo</h2>
+				</div>
+				
+				<div class="row nameRow">
+					<div class="col-md-12">
+						<h3>Abel</h3>
+					</div>
+				</div>
+				<div class="row spacedRow">
+					<div class="col-md-6">
+						<h4>Abel owes Mo:</h4>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<h4>Mo owes Abel:</h4>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row nameRow">
+					<div class="col-md-12">
+						<h3>Will</h3>
+					</div>
+				</div>
+				<div class="row spacedRow">
+					<div class="col-md-6">
+						<h4>Mo owes Will:</h4>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Lorem ipsum dolor sit amet, id cras, leo lorem sit in proin dictum. Amet tellus ac eros, nec lobortis sit
+							</div>
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<h4>Will owes Mo:</h4>
+						<table class="table">
+							<thead><tr><th>Item</th><th>Quantity</th><th>Description</th></thead>
+							<tbody>
+								<tr><td>boba</td><td>2</td><td>desc</td></tr>
+								<tr><td>long text long text long text long text long text long text long text long text </td><td>2</td><td>long text long text long text long text long text long text long text long text long text long text </td></tr>
+								<tr><td>boba</td><td>2</td><td>desc desc desc desc desc desc desc desc desc desc desc desc desc desc desc desc </td></tr>
+								<tr><td>boba</td><td>2</td><td>desc</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+				<div class="row nameRow">
+					<div class="col-md-12">
+						<h3>Will</h3>
+					</div>
+				</div>
+				<div class="row spacedRow">
+					<div class="col-md-6">
+						<h4>Mo owes Will:</h4>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<h4>Will owes Mo:</h4>
+						<div class="row">
+							<div class="col-md-4">
+								Item
+							</div>
+							<div class="col-md-2">
+								Quantity
+							</div>
+							<div class="col-md-6">
+								Description
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			
+			</div>
+			
+		</div>
+		
+		<!-- Add User Modal -->
+		<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalLabel">
+			<div class="modal-dialog modal-sm" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="newUserModalLabel">Add Board User</h4>
+					</div>
+					<form id="userForm">
+						<div class="modal-body">
+								<div class="form-group">
+									<label for="newUserForm">Enter Name of New User:</label>
+									<input type="text" class="form-control" name="name" id="newUserEntry">
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-primary">Submit New User</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		
+		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+		<script src="../../bootstrap-3.3.6/dist/js/bootstrap.min.js"></script>
+		<script>
+			getUsersDropdown();
+		</script>
+	</body>
+</html>

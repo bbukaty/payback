@@ -61,7 +61,7 @@ echo "<table class='table'>",
 	else {
 		echo "<tr><th>Date</th><th>Winner</th><th>Loser</th><th>Item</th><th>Quantity</th><th>Description</th><th>Remove</th>\n</tr>";
 	}
-	echo "\n<thead>",
+	echo "\n</thead>",
 		"\n<tbody>";
 while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 	echo "\t<tr>\n";
