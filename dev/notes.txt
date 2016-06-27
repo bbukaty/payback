@@ -1,0 +1,12 @@
+PHP actions:
+
+get info stored in a table by name, return as either html table or javascript array for names (need to figure this out)
+edit item in debts table (change quantity, edit text, or remove)
+transfer row from debts to history
+
+user page with all debts and owes (as negative debts?) 
+automatically cancel out complementary bets
+
+shift to a more feed-like style, no history, just included on main page 
+ - multiple pages? stuff will pile up in that feed
+ - search options

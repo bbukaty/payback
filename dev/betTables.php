@@ -11,11 +11,11 @@ function returnTable() {
 	global $debtsTable,$historyTable,$usersTable;
 	
 	if ($_POST['action'] == 'getHistory') {
-		$query = "SELECT * FROM $historyTable ORDER BY BETDATE, WINNER, LOSER";
+		$query = "SELECT * FROM $historyTable ORDER BY BETDATE DESC, WINNER, LOSER;";
 		$history = true;
 	}
 	else {
-		$query = "SELECT * FROM $debtsTable ORDER BY WINNER, BETDATE, LOSER";
+		$query = "SELECT * FROM $debtsTable ORDER BY BETDATE DESC, WINNER, LOSER;";
 		$history = false;
 	}
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -23,10 +23,10 @@ function returnTable() {
 	echo "<table class='table'>",
 		"<thead>\n";
 		if ($history) {
-			echo "<tr><th>Date Removed</th><th>Winner</th><th>Loser</th><th>Item</th><th>Quantity</th><th>Description</th>\n</tr>";
+			echo "<tr><th>Date Removed</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th>\n</tr>";
 		}
 		else {
-			echo "<tr><th>Date</th><th>Winner</th><th>Loser</th><th>Item</th><th>Quantity</th><th>Description</th><th>Remove</th>\n</tr>";
+			echo "<tr><th>Date</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th>\n</tr>";
 		}
 		echo "\n</thead>",
 			"\n<tbody>";
@@ -47,16 +47,12 @@ function returnTable() {
 					echo "\t\t<td>$col_value</td>\n";
 				}
 				else {
-					echo "\t\t<td>$col_value   ",
-					"<div class=\"btn-group\" role=\"group\">",
-					"<button class=\"btn btn-primary btn-xs\" onclick=\"alterBet($line[id],'increment')\"><span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\"></span></button>",
-					"<button class=\"btn btn-primary btn-xs\" onclick=\"alterBet($line[id],'decrement')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>",
-					"</div></td>\n";
+					echo "\t\t<td>$col_value</td>\n";
 				}
 			}
 			elseif ($col_num == 6 and !$history) {
 				echo "\t\t<td>$col_value</td>\n";
-				echo "\t\t<td><button class=\"btn btn-danger btn-xs\" onclick=\"alterBet($line[id],'remove')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td>\n";
+				echo "\t\t<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet($line[id],'none')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td>\n";
 				
 			}
 			else {
@@ -70,27 +66,8 @@ function returnTable() {
 		
 	pg_free_result($result);
 }
-
-if ($_POST['action'] == 'getDebts' or $_POST['action'] == 'getHistory') {
-	returnTable();
-}
-elseif ($_POST['action'] == 'increment') {
-	$id = $_POST['id'];
-	$query = "UPDATE $debtsTable SET QUANTITY = QUANTITY + 1 WHERE ID = $id";
-	pg_query($query) or die('Query failed: ' . pg_last_error());
-	returnTable();
-}
-
-elseif ($_POST['action'] == 'decrement') {
-	$id = $_POST['id'];
-	$query = "UPDATE $debtsTable SET QUANTITY = QUANTITY - 1 WHERE ID = $id";
-	pg_query($query) or die('Query failed: ' . pg_last_error());
-	returnTable();
-}
-
-elseif($_POST['action'] == 'remove') {
-	$id = $_POST['id'];
-	
+function removeEntry($id) {
+	global $debtsTable,$historyTable,$usersTable;
 	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now(),winner,loser,item,quantity,description FROM $debtsTable where id=$id";
 	pg_query($query) or die('Query failed: ' . pg_last_error());
 	
@@ -99,6 +76,14 @@ elseif($_POST['action'] == 'remove') {
 	$resultarray = pg_fetch_array($result, null, PGSQL_ASSOC);
 	pg_free_result($result);
 	returnTable();
+}
+
+if ($_POST['action'] == 'getDebts' or $_POST['action'] == 'getHistory') {
+	returnTable();
+}
+
+elseif($_POST['action'] == 'remove') {
+	removeEntry($_POST['id']);
 }
 
 elseif ($_POST['action'] == 'upload') {
@@ -114,8 +99,7 @@ elseif ($_POST['action'] == 'upload') {
 	returnTable();
 }
 elseif ($_POST['action'] == 'getDropdown') {
-	echo "<li><a role=\"button\" data-toggle=\"modal\" data-target=\"#newUserModal\">Add User</a></li>\n",
-		"<li role=\"separator\" class=\"divider\"></li>";
+
 	$query = "SELECT * FROM $usersTable ORDER BY NAME";
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	
@@ -149,6 +133,18 @@ elseif ($_POST['action'] == 'tryAddUser') {
 	else {
 		echo "fail";
 	}
+}
+elseif ($_POST['action'] == 'deleteUser') {
+	$name = $_POST['name'];
+	$query = "SELECT * FROM $debtsTable WHERE WINNER='$name' OR LOSER='$name';";
+	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	$resultArray = pg_fetch_all($result);
+	foreach ($resultArray as $bet) {
+		removeEntry($bet['id']);
+	}
+	
+	$query = "DELETE FROM $usersTable * WHERE NAME='$name';";
+	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 }
 elseif ($_POST['action'] == 'getUserTable') {
 	$name = $_POST['name'];
