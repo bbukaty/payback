@@ -47,7 +47,7 @@ function returnTable() {
 					echo "\t\t<td>$col_value</td>\n";
 				}
 				else {
-					echo "\t\t<td>$col_value</td>\n";
+					echo "\t\t<td id=\"quantity$line[id]\">$col_value     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity('$line[id]',$col_value,'none')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button></td>\n";
 				}
 			}
 			elseif ($col_num == 6 and !$history) {
@@ -84,6 +84,17 @@ if ($_POST['action'] == 'getDebts' or $_POST['action'] == 'getHistory') {
 
 elseif($_POST['action'] == 'remove') {
 	removeEntry($_POST['id']);
+}
+
+elseif ($_POST['action'] == 'updateQuantity') {
+	$id = $_POST['id'];
+	$newQuantity = $_POST['quantity'];
+	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now(),winner,loser,item,quantity,description||' [Quantity changed to $newQuantity]' FROM $debtsTable where id=$id";
+	pg_query($query) or die('Query failed: ' . pg_last_error());
+	
+	$query = "UPDATE $debtsTable SET QUANTITY = $newQuantity WHERE ID = $id";
+	pg_query($query) or die('Query failed: ' . pg_last_error());
+	returnTable();
 }
 
 elseif ($_POST['action'] == 'upload') {

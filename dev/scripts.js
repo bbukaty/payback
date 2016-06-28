@@ -1,11 +1,14 @@
+
 function updateBoard(htmlData) {
 	var board = document.getElementById('boardDiv');
 	board.innerHTML = htmlData;
-	}
+}
+
 function getBoard(boardName) {
 	if (boardName == 'history') {
 		var actionToPost = "getHistory";
 		document.getElementById("homeNavbar").className = "";
+		document.getElementById("usersNavbar").className = "";
 		document.getElementById("historyNavbar").className += " active";
 	}
 	else {
@@ -15,8 +18,35 @@ function getBoard(boardName) {
 		updateBoard(data);
 	});
 }
+
 function removeBet(betId,currentUser) {
-	jQuery.post('betTables.php',{id: betId, action: 'remove'},function (data) {
+	jQuery.post('betTables.php',{action: 'remove', id:betId},function (data) {
+		if (currentUser == "none") {
+			updateBoard(data);
+		}
+		else {
+			displayUser(currentUser);
+		}
+	});
+}
+
+var none = "none";
+function changeQuantity(betId,originalQuantity,currentUser) {
+	quantity = document.getElementById("quantity"+betId);
+	quantityNum = parseInt(quantity.innerHTML);
+	quantityNum--;
+	quantity.className = "bg-danger";
+	quantity.innerHTML = quantityNum+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+betId+","+originalQuantity+",'"+currentUser+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
+	quantity.innerHTML += "   <button class=\"btn btn-primary btn-xs\" onclick=\"uploadQuantity("+betId+","+quantityNum+",'"+currentUser+"')\"><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span>  Save</button>";
+	quantity.innerHTML += "   <button class=\"btn btn-primary btn-xs\" onclick=\"cancelQuantity("+betId+","+originalQuantity+",'"+currentUser+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>  Cancel</button>";
+}
+function cancelQuantity(betId,originalQuantity,currentUser) {
+	quantity = document.getElementById("quantity"+betId);
+	quantity.innerHTML = originalQuantity+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+betId+","+originalQuantity+",'"+currentUser+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
+	quantity.className = "";
+}
+function uploadQuantity(betId,newQuantity,currentUser) {
+	jQuery.post('betTables.php',{action: 'updateQuantity', id:betId, quantity: newQuantity}, function (data) {
 		if (currentUser == "none") {
 			updateBoard(data);
 		}
@@ -92,7 +122,9 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsToOther.forEach(function (debt) {
-					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td>"+debt['quantity']+"</td><td>"+debt['description']+"</td>";
+					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
+					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
 				
 				});
@@ -107,7 +139,9 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsFromOther.forEach(function (debt) {
-					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td>"+debt['quantity']+"</td><td>"+debt['description']+"</td>";
+					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
+					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
 				});
 				currChunk += "</tbody></table>";
@@ -149,6 +183,9 @@ jQuery(document).ready(function () {
 				updateBoard(data);
 				jQuery('#collapseForm').collapse("hide");
 				document.getElementById("betForm").reset();
+				document.getElementById("historyNavbar").className = "";
+				document.getElementById("usersNavbar").className = "dropdown";
+				document.getElementById("homeNavbar").className = "active";
 			});
 	});
 	jQuery('form[id=newUserForm]').submit(function(nameFormSubmit) {
@@ -175,6 +212,9 @@ jQuery(document).ready(function () {
 				jQuery('#deleteUserModal').modal('hide');
 				document.getElementById("deleteUserForm").reset();
 				getUsersDropdowns();
+				document.getElementById("historyNavbar").className = "";
+				document.getElementById("usersNavbar").className = "dropdown";
+				document.getElementById("homeNavbar").className = "active";
 		});
 		}
 	});
