@@ -121,7 +121,12 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsFromOther.forEach(function (debt) {
-					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					var timestamp = debt['betdate'];
+					var year = timestamp.substring(0,4);
+					var date = timestamp.substring(5,10);
+					var time = timestamp.substring(11,16);
+					timestamp = time + " " + date + "-" + year;
+					currChunk += "<tr><td>"+timestamp+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
 					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
 					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
@@ -136,7 +141,12 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsToOther.forEach(function (debt) {
-					currChunk += "<tr><td>"+debt['betdate']+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					var timestamp = debt['betdate'];
+					var year = timestamp.substring(0,4);
+					var date = timestamp.substring(5,10);
+					var time = timestamp.substring(11,16);
+					timestamp = time + " " + date + "-" + year;
+					currChunk += "<tr><td>"+timestamp+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
 					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
 					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
@@ -146,7 +156,6 @@ function displayUser(userName) {
 				
 			}
 			currChunk += "</div></div>";
-			
 			
 			boardDiv.innerHTML += currChunk;
 			
