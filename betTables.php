@@ -19,56 +19,12 @@ function returnTable() {
 		$history = false;
 	}
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-	echo "<table class='table'>",
-		"<thead>\n";
-		if ($history) {
-			echo "<tr><th>Date Removed</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th>\n</tr>";
-		}
-		else {
-			echo "<tr><th>Date</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th>\n</tr>";
-		}
-		echo "\n</thead>",
-			"\n<tbody>";
-	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		echo "\t<tr>\n";
-		$col_num = 0;
-		foreach ($line as $col_value) {
-			if ($col_num == 0) {}
-			elseif ($col_num == 1) {
-				$year = substr($col_value,0,4);
-				$date = substr($col_value,5,5);
-				$time = substr($col_value,11,5);
-				$timestamp = $time . " " . $date . "-" . $year;
-				echo "\t\t<td>$timestamp</td>\n";
-			}
-			elseif ($col_num == 5) {
-				if ($history) {
-					echo "\t\t<td>$col_value</td>\n";
-				}
-				else {
-					echo "\t\t<td id=\"quantity$line[id]\">$col_value     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity('$line[id]',$col_value,'none')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button></td>\n";
-				}
-			}
-			elseif ($col_num == 6 and !$history) {
-				echo "\t\t<td>$col_value</td>\n";
-				echo "\t\t<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet($line[id],'none')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td>\n";
-				
-			}
-			else {
-				echo "\t\t<td>$col_value</td>\n";
-			}
-			$col_num++;
-		}
-		echo "\t</tr>\n";
-		}
-	echo "</tbody>\n</table>\n";
-		
+	echo json_encode(pg_fetch_all($result));
 	pg_free_result($result);
 }
 function removeEntry($id) {
 	global $debtsTable,$historyTable,$usersTable;
-	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now(),winner,loser,item,quantity,description FROM $debtsTable where id=$id";
+	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now() at time zone 'America/Los_Angeles',winner,loser,item,quantity,description FROM $debtsTable where id=$id";
 	pg_query($query) or die('Query failed: ' . pg_last_error());
 	
 	$query = "DELETE FROM $debtsTable WHERE ID=$id";
@@ -89,7 +45,7 @@ elseif($_POST['action'] == 'remove') {
 elseif ($_POST['action'] == 'updateQuantity') {
 	$id = $_POST['id'];
 	$newQuantity = $_POST['quantity'];
-	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now(),winner,loser,item,quantity,description||' [Quantity changed to $newQuantity]' FROM $debtsTable where id=$id";
+	$query = "INSERT INTO $historyTable (betdate,winner,loser,item,quantity,description) SELECT now() at time zone 'America/Los_Angeles',winner,loser,item,quantity,description||' [Quantity changed to $newQuantity]' FROM $debtsTable where id=$id";
 	pg_query($query) or die('Query failed: ' . pg_last_error());
 	
 	$query = "UPDATE $debtsTable SET QUANTITY = $newQuantity WHERE ID = $id";
@@ -104,7 +60,7 @@ elseif ($_POST['action'] == 'upload') {
 	$quantity=$_POST['quantity'];
 	$description=$_POST['description'];
 	
-	$query = "INSERT INTO $debtsTable (BETDATE,WINNER,LOSER,ITEM,QUANTITY,DESCRIPTION) VALUES (NOW(),'$winner','$loser','$item','$quantity','$description')";
+	$query = "INSERT INTO $debtsTable (BETDATE,WINNER,LOSER,ITEM,QUANTITY,DESCRIPTION) VALUES (now() at time zone 'America/Los_Angeles','$winner','$loser','$item','$quantity','$description')";
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	pg_free_result($result);
 	returnTable();
@@ -126,9 +82,6 @@ elseif ($_POST['action'] == 'getDropdown') {
 			echo "<option>$name</option>\n";
 		}
 	}
-
-
-
 	pg_free_result($result);
 }
 elseif ($_POST['action'] == 'tryAddUser') {

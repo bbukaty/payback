@@ -1,12 +1,54 @@
-
-function updateBoard(htmlData) {
-	var board = document.getElementById('boardDiv');
-	board.innerHTML = htmlData;
+function formatDate(timestamp) {
+	var year = timestamp.substring(0,4);
+	var date = timestamp.substring(5,10);
+	var time = timestamp.substring(11,16);
+	if (parseInt(time) > 12) {
+		time = (parseInt(time)-12).toString()+time.substring(2)+" PM";
+	}
+	else {
+		time = time+" AM";
+	}
+	return time + " " + date + "-" + year;
 }
+function updateBoard(jsonArray,isHistory) {
+	if (isHistory == undefined) {
+		isHistory == false;
+	}
+	var board = document.getElementById('boardDiv');
+	var debtsTable = JSON.parse(jsonArray);
+	var newHTML = "<table class='table'><thead>";
+	if (isHistory) {
+		newHTML += "<tr><th>Date Removed</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th>\n</tr>";
+	}
+	else {
+		newHTML += "<tr><th>Date</th><th>Winner</th><th>Loser</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th>\n</tr>";
+	}
+	newHTML += "</thead><tbody>"
+	
 
+	debtsTable.forEach(function (debt) {
+		newHTML += "<tr><td>"+formatDate(debt['betdate'])+"</td>";
+		newHTML += "<td>"+debt['winner']+"</td>";
+		newHTML += "<td>"+debt['loser']+"</td>";
+		newHTML += "<td>"+debt['item']+"</td>";
+		if (isHistory) {
+			newHTML += "<td>"+debt['quantity']+"</td>";
+			newHTML += "<td>"+debt['description']+"</td></tr>";
+		}
+		else {
+			newHTML += "<td id=\"quantity"+debt['id']+"\">"+debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'none')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button></td>"
+			newHTML += "<td>"+debt['description']+"</td>";
+			newHTML += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'none')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
+		}
+	});
+	newHTML += "</tbody></table>";
+	board.innerHTML = newHTML;
+}
 function getBoard(boardName) {
+	var history = false;
 	if (boardName == 'history') {
 		var actionToPost = "getHistory";
+		var history = true;
 		document.getElementById("homeNavbar").className = "";
 		document.getElementById("usersNavbar").className = "";
 		document.getElementById("historyNavbar").className += " active";
@@ -15,7 +57,7 @@ function getBoard(boardName) {
 		var actionToPost = "getDebts";
 	}
 	jQuery.post('betTables.php',{action: actionToPost},function (data) {
-		updateBoard(data);
+		updateBoard(data,history);
 	});
 }
 
@@ -30,7 +72,6 @@ function removeBet(betId,currentUser) {
 	});
 }
 
-var none = "none";
 function changeQuantity(betId,originalQuantity,currentUser) {
 	quantity = document.getElementById("quantity"+betId);
 	quantityNum = parseInt(quantity.innerHTML);
@@ -121,12 +162,7 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsFromOther.forEach(function (debt) {
-					var timestamp = debt['betdate'];
-					var year = timestamp.substring(0,4);
-					var date = timestamp.substring(5,10);
-					var time = timestamp.substring(11,16);
-					timestamp = time + " " + date + "-" + year;
-					currChunk += "<tr><td>"+timestamp+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					currChunk += "<tr><td>"+formatDate(debt['betdate'])+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
 					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
 					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
@@ -141,12 +177,7 @@ function displayUser(userName) {
 				currChunk += "<table class=\"table\"><thead><tr><th>Date</th><th>Item</th><th>#</th><th>Description</th><th>Remove</th></thead>";
 				currChunk += "<tbody>";
 				debtsToOther.forEach(function (debt) {
-					var timestamp = debt['betdate'];
-					var year = timestamp.substring(0,4);
-					var date = timestamp.substring(5,10);
-					var time = timestamp.substring(11,16);
-					timestamp = time + " " + date + "-" + year;
-					currChunk += "<tr><td>"+timestamp+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
+					currChunk += "<tr><td>"+formatDate(debt['betdate'])+"</td><td>"+debt['item']+"</td><td id=\"quantity"+debt['id']+"\">";
 					currChunk += debt['quantity']+"     <button class=\"btn btn-primary btn-xs\" onclick=\"changeQuantity("+debt['id']+","+debt['quantity']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-minus\" aria-hidden=\"true\"></span></button>";
 					currChunk += "</td><td>"+debt['description']+"</td>";
 					currChunk += "<td><button class=\"btn btn-danger btn-xs\" onclick=\"removeBet("+debt['id']+",'"+userName+"')\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"/></button></td></tr>";
